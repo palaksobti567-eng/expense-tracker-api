@@ -1,5 +1,5 @@
-from db import insert_expense,update_expense,delete_expense,get_all_expenses
-from errors import InvalidExpenseError, ExpenseNotFoundError,PersistenceError
+from db import insert_expense,update_expense,delete_expense
+from errors import InvalidExpenseError, ExpenseNotFoundError,DatabaseError
 from decimal import Decimal, InvalidOperation,ROUND_HALF_UP
 
 
@@ -9,7 +9,7 @@ def validate_expense_data(amount,description):
    try:
       amount = Decimal(str(amount))
    except (InvalidOperation,ValueError):
-      raise InvalidExpenseError("Invalid amount","Must be positive")
+      raise InvalidExpenseError("Invalid amount","Must be numeric")
    if amount <= 0:
       raise InvalidExpenseError("Invalid amount","Must be positive")
    amount=amount.quantize(Decimal("0.01"),rounding=ROUND_HALF_UP)
@@ -25,16 +25,11 @@ def validate_expense_data(amount,description):
    return amount,description
 def validate_expense_id(expense_id):
     if not isinstance(expense_id, int):
-        raise InvalidExpenseError(
-            "Invalid ID",
-            "ID must be an integer"
-        )
+        raise InvalidExpenseError("Invalid ID","ID must be an integer")
 
     if expense_id <= 0:
-        raise InvalidExpenseError(
-            "Invalid ID",
-            "ID must be positive"
-        )
+        raise InvalidExpenseError("Invalid ID","ID must be positive")
+    return expense_id
 def create_expense(amount, description):
     amount,description = validate_expense_data(amount,description)
     return insert_expense(amount,description)

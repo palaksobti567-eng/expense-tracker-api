@@ -8,32 +8,39 @@ def init_db():
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS expenses (
                            id INTEGER PRIMARY KEY,
-                           amount REAL,
-                           description TEXT,
-                           created_at TEXT
+                           amount REAL NOT NULL,
+                           description TEXT NOT NULL,
+                           created_at TEXT NOT NULL
                            )
                            """)
             cursor.execute("""
                            CREATE INDEX IF NOT EXISTS idx_expenses_created_at
                            ON expenses(created_at)
                            """)
-def execute_query(query,params=(),fetchone=False,fetchall=False):
-    with get_connection() as conn:
-        cursor=conn.cursor()
-        cursor.execute(query,params)
-        if fetchone:
+def execute_query(query,params=(),fetch=None):
+    """
+    Centralized database execution helper.
+    fetch options:
+    - None      → return cursor (for INSERT/UPDATE/DELETE)
+    - "one"     → return single row
+    - "all"     → return all rows
+    """
+    try:
+      with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+
+        if fetch == "one":
             return cursor.fetchone()
-        if fetchall:
+
+        if fetch == "all":
             return cursor.fetchall()
-        
+
         conn.commit()
         return cursor
-
-def get_connection():
-      conn = sqlite3.connect(DB_NAME,timeout=5)
-      conn.row_factory = sqlite3.Row
-      return conn
-
+      
+    except sqlite3.Error as e:
+         raise DatabaseError("Database operation failed",str(e))
 
 def insert_expense(amount, description):
         cursor=execute_query(
@@ -74,7 +81,7 @@ def get_all_expenses():
             FROM expenses
             ORDER BY created_at DESC
             """,
-            fetchall=True
+            fetch="all"
         )
 
         

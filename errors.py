@@ -3,19 +3,19 @@ def error_response(message, details=None):
         "error": message,
         "details": details
     }
-class InvalidExpenseError(Exception):
+class APIError(Exception):
+    """Base class for API Exceptions"""
     def __init__(self, message, details=None):
         self.message=message
         self.details= details
         super().__init__(message)
+
+class InvalidExpenseError(APIError):
+    pass
     
-class ExpenseNotFoundError(Exception):
+class ExpenseNotFoundError(APIError):
     def __init__(self,message="Expense not found",details=None):
-        self.maessag=message
-        self.details=details
-        super().__init__(message)
+        super().__init__(message,details)
 class DatabaseError(Exception):
     def __init__(self,message="Database Error",details=None):
-        self.messsage=message
-        self.details=details
-        super().__init__(message)
+        super().__init__(message,details)
