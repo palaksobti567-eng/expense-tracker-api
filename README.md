@@ -2,6 +2,15 @@
 
 ## Overview
 
+
+A simple REST API built with Flask to manage expenses.
+
+Features:
+- Create expense
+- Delete expense
+- Input validation
+- Structured error handling
+- Layered architecture (routes → logic → db)
 This project is a simple backend API for managing expenses.
 It is built to practice backend architecture, error handling, validation, and defensive programming.
 
