@@ -43,7 +43,7 @@ expense-tracker/
 The project follows a layered architecture:
 
 - **routes.py** → Handles HTTP requests and responses  
-- **services.py** → Contains business logic and validation  
+- **logic.py** → Contains business logic and validation  
 - **db.py** → Handles database operations  
 - **errors.py** → Defines custom exceptions  
 
@@ -56,7 +56,7 @@ This separation improves maintainability and prevents mixing concerns.
 1. Clone the repository
 
 
-git clone https://github.com/palaksobti567-eng/expense-tracker.git
+git clone https://github.com/palaksobti567-eng/expense-tracker-api.git
 
 
 2. Navigate to the project directory
