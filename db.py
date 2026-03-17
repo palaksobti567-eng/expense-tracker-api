@@ -1,6 +1,10 @@
 import sqlite3
-
+from errors import DatabaseError
 DB_NAME = "expense.db"
+
+def get_connection():
+     return sqlite3.connect(DB_NAME)
+
 def init_db():
       with sqlite3.connect(DB_NAME) as conn:
             cursor = conn.cursor()
@@ -8,7 +12,7 @@ def init_db():
             cursor.execute("""
             CREATE TABLE IF NOT EXISTS expenses (
                            id INTEGER PRIMARY KEY,
-                           amount REAL NOT NULL,
+                           amount NUMERIC NOT NULL,
                            description TEXT NOT NULL,
                            created_at TEXT NOT NULL
                            )
@@ -17,6 +21,7 @@ def init_db():
                            CREATE INDEX IF NOT EXISTS idx_expenses_created_at
                            ON expenses(created_at)
                            """)
+
 def execute_query(query,params=(),fetch=None):
     """
     Centralized database execution helper.
@@ -40,6 +45,8 @@ def execute_query(query,params=(),fetch=None):
         return cursor
       
     except sqlite3.Error as e:
+         print("SQL ERROR:",e)
+         
          raise DatabaseError("Database operation failed",str(e))
 
 def insert_expense(amount, description):

@@ -1,9 +1,11 @@
-from db import insert_expense,update_expense,delete_expense
+from db import insert_expense,update_expense,delete_expense,get_all_expenses
 from errors import InvalidExpenseError, ExpenseNotFoundError,DatabaseError
 from decimal import Decimal, InvalidOperation,ROUND_HALF_UP
 
 
 def validate_expense_data(amount,description):
+   if amount is None:
+      raise InvalidExpenseError("Invalid amount","Amount is required")
    if isinstance(amount,bool):
       raise InvalidExpenseError("Invalid amount","Boolean not allowed")
    try:
@@ -32,10 +34,10 @@ def validate_expense_id(expense_id):
     return expense_id
 def create_expense(amount, description):
     amount,description = validate_expense_data(amount,description)
-    return insert_expense(amount,description)
+    return insert_expense(float(amount),description)
 
-def update_expense_logic(expense_id,amount,description):
-   validate_expense_id(expense_id)
+def update_expense(expense_id,amount,description):
+   expense_id = validate_expense_id(expense_id)
 
    amount,description = validate_expense_data(amount,description)
    

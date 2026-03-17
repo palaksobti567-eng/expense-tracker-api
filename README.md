@@ -2,212 +2,172 @@
 
 ## Overview
 
-
 A simple REST API built with Flask to manage expenses.
 
-Features:
-- Create expense
-- Delete expense
+This project demonstrates core backend development concepts including:
+- Clean architecture (separation of concerns)
 - Input validation
 - Structured error handling
-- Layered architecture (routes → logic → db)
-This project is a simple backend API for managing expenses.
-It is built to practice backend architecture, error handling, validation, and defensive programming.
+- Database interaction using SQLite
 
 The API allows clients to:
-
-* Create an expense
-* Delete an expense
-* Retrieve expenses
-
-The focus of the project is **clean architecture and clear separation of responsibilities**, not just making the code work.
+- Create an expense
+- Retrieve all expenses
+- Delete an expense
 
 ---
 
-# Architecture
+## Tech Stack
 
-The project follows a **layered architecture** to separate concerns and reduce bugs.
-
-```
-project/
- ├── routes.py
- ├── logic.py
- ├── db.py
- └── errors.py
-```
-
-### routes.py — HTTP Layer
-
-Responsibilities:
-
-* Receive HTTP requests
-* Parse request data (JSON)
-* Call business logic
-* Convert results into HTTP responses
-* Convert exceptions into proper HTTP error responses
-
-Routes should **not contain business rules or SQL logic**.
+- Python
+- Flask
+- SQLite
 
 ---
 
-### logic.py — Business Logic Layer
+## Project Structure
 
-Responsibilities:
 
-* Enforce application rules
-* Validate input data
-* Maintain invariants
+expense-tracker/
+├── app.py
+├── routes.py
+├── logic.py
+├── db.py
+├── errors.py
+├── requirements.txt
+└── expense.db
 
-Examples of rules:
 
-* `amount` must be a positive number
-* `description` must not be empty
-* `id` must be a positive integer
+### Architecture Overview
 
-If a rule is violated, the logic layer **raises a domain exception**.
+The project follows a layered architecture:
 
----
+- **routes.py** → Handles HTTP requests and responses  
+- **services.py** → Contains business logic and validation  
+- **db.py** → Handles database operations  
+- **errors.py** → Defines custom exceptions  
 
-### db.py — Database Layer
-
-Responsibilities:
-
-* Handle database connections
-* Execute SQL queries
-* Return database results
-
-This layer **does not perform validation**.
-It only performs persistence operations.
+This separation improves maintainability and prevents mixing concerns.
 
 ---
 
-### errors.py — Error Definitions
+## Setup Instructions
 
-Responsibilities:
+1. Clone the repository
 
-* Define custom exception types
-* Provide a consistent error response format
 
-Example errors:
+git clone https://github.com/palaksobti567-eng/expense-tracker.git
 
-* `InvalidExpenseError`
-* `ExpenseNotFoundError`
-* `DatabaseError`
 
-All errors returned to the client follow the same JSON structure:
+2. Navigate to the project directory
 
-```
-{
-  "error": "Error message",
-  "details": "Additional explanation"
-}
-```
+
+cd expense-tracker
+
+
+3. Install dependencies
+
+
+pip install -r requirements.txt
+
 
 ---
 
-# Error Handling Philosophy
+## Running the Server
 
-Errors are handled using **exception propagation**.
+Start the Flask application:
 
-The flow is:
 
-```
-logic.py raises exception
-      ↓
-routes.py catches exception
-      ↓
-routes.py returns HTTP response
-```
+python app.py
 
-This keeps business logic independent from HTTP behavior.
 
-Example:
+The server will run at:
 
-```
-InvalidExpenseError → HTTP 400
-ExpenseNotFoundError → HTTP 404
-DatabaseError → HTTP 500
-```
+
+http://127.0.0.1:5000
+
 
 ---
 
-# Validation Approach
+## API Endpoints
 
-All validation happens in **logic.py**.
+### GET /expenses
 
-Reasons:
-
-* Prevent invalid data from reaching the database
-* Avoid duplication across multiple routes
-* Keep business rules independent from HTTP
-
-Example validations:
-
-* amount must be numeric
-* amount must be greater than zero
-* description must not be empty
+Returns all stored expenses.
 
 ---
 
-# Request Flow
+### POST /expenses
 
-Example request:
+Creates a new expense.
 
-```
-POST /expenses
+**Request Body:**
+
+```json
 {
   "amount": 50,
   "description": "food"
 }
-```
+DELETE /expenses/<id>
 
-System flow:
+Deletes an expense by ID.
 
-```
-Client
-  ↓
-routes.py (HTTP parsing)
-  ↓
-logic.py (validation + rules)
-  ↓
-db.py (SQL execution)
-  ↑
-logic.py
-  ↑
-routes.py (format response)
-  ↓
-Client receives JSON response
-```
+Example Responses
 
----
+Success:
 
-# Example Response
-
-Successful request:
-
-```
 {
   "id": 42
 }
-```
 
-Error response:
+Error:
 
-```
 {
   "error": "Invalid amount",
   "details": "Amount must be positive"
 }
-```
+Error Handling
 
----
+The API uses structured error handling with custom exceptions.
 
-# What This Project Demonstrates
+Error flow:
 
-This project focuses on:
+services.py → raises exception  
+routes.py → catches exception → returns HTTP response
 
-* Separation of concerns
-* Defensive programming
-* Error propagation
-* Input validation
-* Clean backend architecture
+Common status codes:
+
+400 → Bad Request (invalid input)
+
+404 → Resource not found
+
+500 → Internal server error
+
+Validation Rules
+
+All validation is handled in the service layer.
+
+Rules include:
+
+Amount must be numeric
+
+Amount must be greater than zero
+
+Description must not be empty
+
+This ensures invalid data never reaches the database.
+
+Request Flow
+Client
+  ↓
+routes.py (HTTP handling)
+  ↓
+services.py (validation + business logic)
+  ↓
+db.py (database operations)
+  ↑
+services.py
+  ↑
+routes.py (response formatting)
+  ↓
+Client
