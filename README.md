@@ -62,7 +62,7 @@ This separation ensures clean code, easier debugging, and better scalability.
 1. Clone the repository
 
 
-git clone https://github.com/your-username/expense-tracker.git
+git clone https://github.com/palaksobti567-eng/expense-tracker.git
 
 
 2. Navigate to the project directory
