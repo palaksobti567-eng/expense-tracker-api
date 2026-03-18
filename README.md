@@ -37,7 +37,7 @@ The project follows a layered design to separate HTTP handling, business logic, 
 expense-tracker/
 ├── app.py # Entry point, initializes Flask app
 ├── routes.py # Handles HTTP endpoints
-├── services.py # Business logic and validation
+├── logic.py # Business logic and validation
 ├── db.py # Database operations
 ├── errors.py # Custom exception definitions
 ├── requirements.txt # Dependencies
@@ -49,7 +49,7 @@ expense-tracker/
 The project follows a layered architecture:
 
 - **routes.py** → Handles HTTP requests and responses  
-- **services.py** → Contains validation and business logic  
+- **logic.py** → Contains validation and business logic  
 - **db.py** → Handles database interactions  
 - **errors.py** → Defines custom exceptions  
 
